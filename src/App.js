@@ -3,8 +3,8 @@ import styled from 'styled-components'
 
 import Icon from "./icons";
 
-const bgImageUri = window.location.origin + '/images/bg.jpeg'
-const mainBgUri = window.location.origin + '/images/bgPattern.png'
+const bgImageUri = process.env.PUBLIC_URL + '/images/bg.jpeg'
+const mainBgUri = process.env.PUBLIC_URL + '/images/bgPattern.png'
 
 
 const Wrapper = styled.div`
