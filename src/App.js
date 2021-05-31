@@ -142,7 +142,7 @@ function App() {
             })
         }, 1000)
         return () => clearInterval(timerHandler)
-    }, [state.time, state.showIndexes.length])
+    }, [state.time, state.showIndexes.length, state.gameRunning])
     return (
         <Wrapper>
             <h4>Memory Game</h4>
