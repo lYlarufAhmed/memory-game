@@ -1,0 +1,11 @@
+1. The App component will have 4 main state variable
+    a. moves
+    b. score
+    c. current time
+
+2. restart button component to reset every variable and randomize the sequence of the puzzle pieces
+
+3. 4x4 puzzle pieces with one prop (the image) and 2 state variable (display(show or hide), start_timer(true or false)). after the interval the puzzle will switch to hide if they not match or showed other wise
+4. I will first layout main component with timer working
+5. then I will create the puzzle board component with its child puzzle pieces component.
+
