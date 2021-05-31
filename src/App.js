@@ -72,7 +72,6 @@ let ICONS = []
 for (let i = 1; i < 17; i++) {
     ICONS.push(i > 8 ? i - 8 : i)
 }
-const objectDeepCopy = (obj) => JSON.parse(JSON.stringify(obj))
 const shuffleArr = (arr) => arr.sort(() => Math.random() - Math.random())
 const formattedTime = (secs) => `${Math.floor(secs / 60)}m ${secs % 60}s`
 const checkImages = (clickedImages, index, imgIndex) => clickedImages.filter((obj) => obj.index === index && obj.imgIndex === imgIndex).length === 1
@@ -85,7 +84,7 @@ const initialState = {
     'gameRunning': true,
     'clickedImages': [],
     'showIndexes': [],
-    'lastClicked': 0
+    'lastClicked': NaN
 }
 
 function App() {
@@ -106,6 +105,7 @@ function App() {
                     if (clickedImages[0].imgIndex === clickedImages[1].imgIndex) {
                         prev.score += 1
                         prev.showIndexes.push(prev.clickedImages[0].imgIndex)
+                        if (prev.showIndexes.length === 8) prev.gameRunning = false
                     }
                     prev.lastClicked = new Date().getTime()
                 }
@@ -117,7 +117,7 @@ function App() {
 
     useEffect(() => {
         const timerHandler = setInterval(() => {
-            if (state.showIndexes.length === 8) {
+            if (state.showIndexes.length === 8 || !state.gameRunning) {
                 clearInterval(timerHandler)
                 setState(prev => {
                     prev.gameRunning = false
@@ -142,7 +142,7 @@ function App() {
             })
         }, 1000)
         return () => clearInterval(timerHandler)
-    }, [state.time])
+    }, [state.time, state.showIndexes.length])
     return (
         <Wrapper>
             <h4>Memory Game</h4>
@@ -153,6 +153,11 @@ function App() {
                 <ResetBtn onClick={() => setState(prev => {
                     prev.clickedImages = []
                     prev.showIndexes = []
+                    prev.time = 0
+                    prev.score = 0
+                    prev.score = 0
+                    prev.lastClicked = NaN
+                    prev.gameRunning = true
                     return {...prev}
                 })}>Restart</ResetBtn>
             </DashBoard>
