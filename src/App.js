@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
 import styled from 'styled-components'
+import bgImageUri from './images/bg.jpeg'
+import mainBgUri from './images/bgPattern.png'
 
 import Icon from "./icons";
 
-const bgImageUri = process.env.PUBLIC_URL + '/images/bg.jpeg'
-const mainBgUri = process.env.PUBLIC_URL + '/images/bgPattern.png'
+// const bgImageUri = process.env.PUBLIC_URL + '/images/bg.jpeg'
+// const mainBgUri = process.env.PUBLIC_URL + '/images/bgPattern.png'
 
 
 const Wrapper = styled.div`
