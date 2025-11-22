@@ -1,10 +1,10 @@
-import React, {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useEffect, useState} from "react";
 
 
 import Icon from "./icons";
 import {
     Wrapper, DashBoard, GameWrapper, ResetBtn, IconContainer, IconCover,
-} from "./StyledComopnents";
+} from "./StyledComponents";
 
 
 let ICONS: number[]
@@ -52,24 +52,37 @@ function App(): ReactElement {
     const clickHandler = (index: number, imgIndex: number) => {
         setState(prev => {
             if (!checkImages(prev.clickedImages, index, imgIndex)) {
-                if (prev.clickedImages.length > 1) {
-                    prev.clickedImages = []
-                    prev.lastClicked = NaN
-                }
-                prev.clickedImages.push({index, imgIndex})
-                if (prev.clickedImages.length === 2) {
-                    prev.moves += 1
-                    let clickedImages = prev.clickedImages
+                let clickedImages = prev.clickedImages.length > 1
+                    ? [{index, imgIndex}]
+                    : [...prev.clickedImages, {index, imgIndex}];
+
+                let lastClicked = prev.clickedImages.length > 1 ? NaN : prev.lastClicked;
+                let moves = prev.moves;
+                let score = prev.score;
+                let showIndexes = prev.showIndexes;
+                let gameRunning = prev.gameRunning;
+
+                if (clickedImages.length === 2) {
+                    moves += 1;
                     if (clickedImages[0].imgIndex === clickedImages[1].imgIndex) {
-                        prev.score += 1
-                        prev.showIndexes.push(prev.clickedImages[0].imgIndex)
-                        if (prev.showIndexes.length === 8) prev.gameRunning = false
+                        score += 1;
+                        showIndexes = [...prev.showIndexes, clickedImages[0].imgIndex];
+                        if (showIndexes.length === 8) gameRunning = false;
                     }
-                    prev.lastClicked = new Date().getTime()
+                    lastClicked = new Date().getTime();
                 }
+
+                return {
+                    ...prev,
+                    clickedImages,
+                    lastClicked,
+                    moves,
+                    score,
+                    showIndexes,
+                    gameRunning
+                };
             }
-            // return JSON.parse(JSON.stringify(prev))
-            return {...prev}
+            return prev;
         })
     }
 
@@ -77,20 +90,29 @@ function App(): ReactElement {
         const timerHandler = setInterval(() => {
             if (state.showIndexes.length === 8 || !state.gameRunning) {
                 clearInterval(timerHandler)
-                setState(prev => {
-                    prev.gameRunning = false
-                    return {...prev}
-                })
+                setState(prev => ({
+                    ...prev,
+                    gameRunning: false
+                }))
             } else setState(prev => {
-                prev.time += 1
                 let currTime = new Date().getTime()
                 let clickDiff = prev.lastClicked > 0 ? currTime - prev.lastClicked : NaN
                 console.log('click diff', clickDiff)
+
+                let clickedImages = prev.clickedImages;
+                let lastClicked = prev.lastClicked;
+
                 if ((clickDiff > 2500) && (prev.clickedImages.length === 2)) {
-                    prev.clickedImages = []
-                    prev.lastClicked = NaN
+                    clickedImages = [];
+                    lastClicked = NaN;
                 }
-                return {...prev}
+
+                return {
+                    ...prev,
+                    time: prev.time + 1,
+                    clickedImages,
+                    lastClicked
+                }
             })
         }, 1000)
         return () => clearInterval(timerHandler)
