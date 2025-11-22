@@ -15,14 +15,8 @@ import { shuffleArray } from "./utils/array.utils";
 import { formattedTime } from "./utils/timing.utils";
 import { checkImages } from "./utils/game.utils";
 
-
-let ICONS: number[];
-
-
-ICONS = shuffleArray();
-
 const initialState: GameState = {
-  iconsIndexes: ICONS,
+  iconsIndexes: shuffleArray(),
   moves: 0,
   time: 0,
   score: 0,
@@ -37,7 +31,7 @@ function App(): ReactElement {
   const toggleGameRunning = () =>
     setState((prev: GameState) =>
       prev.status == "completed"
-        ? { ...initialState, status: "playing" }
+        ? { ...initialState, status: "playing", iconsIndexes: shuffleArray() }
         : {
             ...prev,
             // gameRunning: !prev.gameRunning,
@@ -67,7 +61,6 @@ function App(): ReactElement {
             score += 1;
             showIndexes = [...prev.showIndexes, clickedImages[0].imgIndex];
             if (showIndexes.length === 8) {
-              // ended = true;
               status = "completed";
             }
           }
@@ -99,8 +92,6 @@ function App(): ReactElement {
         clearInterval(timerHandler);
         setState((prev) => ({
           ...prev,
-          // ended: true,
-          // gameRunning: false,
           status: "completed",
         }));
       } else
@@ -152,8 +143,6 @@ function App(): ReactElement {
               setState({
                 ...initialState,
                 iconsIndexes: shuffleArray(),
-                // ended: false,
-                // gameRunning: true,
                 status: "playing",
               })
             }
@@ -170,7 +159,7 @@ function App(): ReactElement {
       )}
 
       <GameWrapper>
-        {ICONS.map((i: number, index: number) => (
+        {state.iconsIndexes.map((i: number, index: number) => (
           <IconContainer
             matched={state.showIndexes.includes(i)}
             key={index}
