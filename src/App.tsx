@@ -33,6 +33,7 @@ type State = {
   clickedImages: Image[];
   showIndexes: number[];
   lastClicked: number;
+  ended: boolean;
 };
 const formattedTime = (secs: number) =>
   `${Math.floor(secs / 60)}m ${secs % 60}s`;
@@ -47,14 +48,17 @@ const initialState: State = {
   moves: 0,
   time: 0,
   score: 0,
-  gameRunning: true,
+  gameRunning: false,
   clickedImages: [],
   showIndexes: [],
   lastClicked: NaN,
+  ended: false,
 };
 
 function App(): ReactElement {
   let [state, setState] = useState(initialState);
+  const toggleGameRunning = () =>
+    setState((prev) => ({ ...prev, gameRunning: !prev.gameRunning }));
   const clickHandler = (index: number, imgIndex: number) => {
     setState((prev) => {
       if (!checkImages(prev.clickedImages, index, imgIndex)) {
@@ -69,13 +73,14 @@ function App(): ReactElement {
         let score = prev.score;
         let showIndexes = prev.showIndexes;
         let gameRunning = prev.gameRunning;
+        let ended = prev.ended;
 
         if (clickedImages.length === 2) {
           moves += 1;
           if (clickedImages[0].imgIndex === clickedImages[1].imgIndex) {
             score += 1;
             showIndexes = [...prev.showIndexes, clickedImages[0].imgIndex];
-            if (showIndexes.length === 8) gameRunning = false;
+            if (showIndexes.length === 8) ended = true;
           }
           lastClicked = new Date().getTime();
         }
@@ -83,10 +88,11 @@ function App(): ReactElement {
         return {
           ...prev,
           clickedImages,
-          lastClicked,
+          lastClicked, // to flip the images after a certain time
           moves,
           score,
           showIndexes,
+          ended,
           gameRunning,
         };
       }
@@ -96,11 +102,11 @@ function App(): ReactElement {
 
   useEffect(() => {
     const timerHandler = setInterval(() => {
-      if (state.showIndexes.length === 8 || !state.gameRunning) {
+      if (state.showIndexes.length === 8 || state.ended) {
         clearInterval(timerHandler);
         setState((prev) => ({
           ...prev,
-          gameRunning: false,
+          ended: true,
         }));
       } else
         setState((prev) => {
@@ -119,14 +125,14 @@ function App(): ReactElement {
 
           return {
             ...prev,
-            time: prev.time + 1,
+            time: prev.gameRunning ? prev.time + 1 : prev.time,
             clickedImages,
             lastClicked,
           };
         });
     }, 1000);
     return () => clearInterval(timerHandler);
-  }, [state.time, state.showIndexes.length, state.gameRunning]);
+  }, [state.time, state.showIndexes.length, state.gameRunning, state.ended]);
   return (
     <Wrapper>
       <h4>Memory Game</h4>
@@ -134,15 +140,23 @@ function App(): ReactElement {
         <span>Time: {formattedTime(state.time)}</span>
         <span>{state.moves} moves</span>
         <span>Score: {state.score}</span>
+        <ResetBtn onClick={toggleGameRunning}>
+          {state.gameRunning ? "Pause" : "Start"}
+        </ResetBtn>
         <ResetBtn
           onClick={() =>
-            setState({ ...initialState, iconsIndexes: getShuffledArr() })
+            setState({
+              ...initialState,
+              iconsIndexes: getShuffledArr(),
+              ended: false,
+              gameRunning: true
+            })
           }
         >
           Restart
         </ResetBtn>
       </DashBoard>
-      {!state.gameRunning && (
+      {state.ended && (
         <b>
           Congratulations! You won in {state.moves} moves! You took{" "}
           {formattedTime(state.time)}!
