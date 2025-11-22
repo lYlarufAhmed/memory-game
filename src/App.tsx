@@ -107,17 +107,19 @@ function App(): ReactElement {
         setState((prev) => ({
           ...prev,
           ended: true,
+          gameRunning: false
         }));
       } else
         setState((prev) => {
           let currTime = new Date().getTime();
           let clickDiff =
             prev.lastClicked > 0 ? currTime - prev.lastClicked : NaN;
-          console.log("click diff", clickDiff);
+        //   console.log("click diff", clickDiff);
 
           let clickedImages = prev.clickedImages;
           let lastClicked = prev.lastClicked;
 
+          // after 2.5 sec flip the open images automatically.
           if (clickDiff > 2500 && prev.clickedImages.length === 2) {
             clickedImages = [];
             lastClicked = NaN;
