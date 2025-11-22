@@ -1,6 +1,7 @@
 import { ReactElement, useEffect, useState } from "react";
 
 import Icon from "./icons";
+import { Card, GameState, GameStatus } from "./types/game.types";
 import {
   Wrapper,
   DashBoard,
@@ -20,45 +21,38 @@ const getShuffledArr = () => {
   arr.sort(() => Math.random() - Math.random());
   return arr;
 };
-type Image = {
-  index: number;
-  imgIndex: number;
-};
-type State = {
-  iconsIndexes: number[];
-  moves: number;
-  time: number;
-  score: number;
-  gameRunning: boolean;
-  clickedImages: Image[];
-  showIndexes: number[];
-  lastClicked: number;
-  ended: boolean;
-};
+
 const formattedTime = (secs: number) =>
   `${Math.floor(secs / 60)}m ${secs % 60}s`;
-const checkImages = (clickedImages: Image[], index: number, imgIndex: number) =>
+const checkImages = (clickedImages: Card[], index: number, imgIndex: number) =>
   clickedImages.filter(
     (obj) => obj.index === index && obj.imgIndex === imgIndex
   ).length === 1;
 ICONS = getShuffledArr();
 
-const initialState: State = {
+const initialState: GameState = {
   iconsIndexes: ICONS,
   moves: 0,
   time: 0,
   score: 0,
-  gameRunning: false,
   clickedImages: [],
   showIndexes: [],
   lastClicked: NaN,
-  ended: false,
+  status: "idle",
 };
 
 function App(): ReactElement {
-  let [state, setState] = useState(initialState);
+  let [state, setState] = useState<GameState>(initialState);
   const toggleGameRunning = () =>
-    setState((prev) => ({ ...prev, gameRunning: !prev.gameRunning }));
+    setState((prev: GameState) =>
+      prev.status == "completed"
+        ? { ...initialState, status: "playing" }
+        : {
+            ...prev,
+            // gameRunning: !prev.gameRunning,
+            status: prev.status == "playing" ? "paused" : "playing",
+          }
+    );
   const clickHandler = (index: number, imgIndex: number) => {
     setState((prev) => {
       if (!checkImages(prev.clickedImages, index, imgIndex)) {
@@ -72,15 +66,19 @@ function App(): ReactElement {
         let moves = prev.moves;
         let score = prev.score;
         let showIndexes = prev.showIndexes;
-        let gameRunning = prev.gameRunning;
-        let ended = prev.ended;
+        // let gameRunning = prev.gameRunning;
+        // let ended = prev.ended;
+        let status = prev.status;
 
         if (clickedImages.length === 2) {
           moves += 1;
           if (clickedImages[0].imgIndex === clickedImages[1].imgIndex) {
             score += 1;
             showIndexes = [...prev.showIndexes, clickedImages[0].imgIndex];
-            if (showIndexes.length === 8) ended = true;
+            if (showIndexes.length === 8) {
+              // ended = true;
+              status = "completed";
+            }
           }
           lastClicked = new Date().getTime();
         }
@@ -92,29 +90,34 @@ function App(): ReactElement {
           moves,
           score,
           showIndexes,
-          ended,
-          gameRunning,
+          // ended,
+          // gameRunning,
+          status,
         };
       }
       return prev;
     });
   };
 
+  const showResetButton = () =>
+    state.status == "playing" || state.status == "paused";
+
   useEffect(() => {
     const timerHandler = setInterval(() => {
-      if (state.showIndexes.length === 8 || state.ended) {
+      if (state.showIndexes.length === 8 || state.status == "completed") {
         clearInterval(timerHandler);
         setState((prev) => ({
           ...prev,
-          ended: true,
-          gameRunning: false
+          // ended: true,
+          // gameRunning: false,
+          status: "completed",
         }));
       } else
         setState((prev) => {
           let currTime = new Date().getTime();
           let clickDiff =
             prev.lastClicked > 0 ? currTime - prev.lastClicked : NaN;
-        //   console.log("click diff", clickDiff);
+          //   console.log("click diff", clickDiff);
 
           let clickedImages = prev.clickedImages;
           let lastClicked = prev.lastClicked;
@@ -127,14 +130,21 @@ function App(): ReactElement {
 
           return {
             ...prev,
-            time: prev.gameRunning ? prev.time + 1 : prev.time,
+            time: prev.status == "playing" ? prev.time + 1 : prev.time,
             clickedImages,
             lastClicked,
           };
         });
     }, 1000);
     return () => clearInterval(timerHandler);
-  }, [state.time, state.showIndexes.length, state.gameRunning, state.ended]);
+  }, [
+    state.time,
+    state.showIndexes.length,
+    // state.gameRunning,
+    // state.ended,
+    state.status,
+  ]);
+
   return (
     <Wrapper>
       <h4>Memory Game</h4>
@@ -143,22 +153,25 @@ function App(): ReactElement {
         <span>{state.moves} moves</span>
         <span>Score: {state.score}</span>
         <ResetBtn onClick={toggleGameRunning}>
-          {state.gameRunning ? "Pause" : "Start"}
+          {state.status == "playing" ? "Pause" : "Start"}
         </ResetBtn>
-        <ResetBtn
-          onClick={() =>
-            setState({
-              ...initialState,
-              iconsIndexes: getShuffledArr(),
-              ended: false,
-              gameRunning: true
-            })
-          }
-        >
-          Restart
-        </ResetBtn>
+        {showResetButton() == true && (
+          <ResetBtn
+            onClick={() =>
+              setState({
+                ...initialState,
+                iconsIndexes: getShuffledArr(),
+                // ended: false,
+                // gameRunning: true,
+                status: "playing",
+              })
+            }
+          >
+            Restart
+          </ResetBtn>
+        )}
       </DashBoard>
-      {state.ended && (
+      {state.status == "completed" && (
         <b>
           Congratulations! You won in {state.moves} moves! You took{" "}
           {formattedTime(state.time)}!
@@ -170,7 +183,9 @@ function App(): ReactElement {
           <IconContainer
             matched={state.showIndexes.includes(i)}
             key={index}
-            onClick={() => clickHandler(index, i)}
+            onClick={() =>
+              state.status == "playing" ? clickHandler(index, i) : () => {}
+            }
           >
             <Icon svgNo={i} />
             <IconCover
