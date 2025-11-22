@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from "react";
 
 import Icon from "./icons";
-import { Card, GameState, GameStatus } from "./types/game.types";
+import { GameState } from "./types/game.types";
 import {
   Wrapper,
   DashBoard,
@@ -11,24 +11,15 @@ import {
   IconCover,
 } from "./StyledComponents";
 
+import { shuffleArray } from "./utils/array.utils";
+import { formattedTime } from "./utils/timing.utils";
+import { checkImages } from "./utils/game.utils";
+
+
 let ICONS: number[];
 
-const getShuffledArr = () => {
-  let arr: number[] = [];
-  for (let i = 1; i < 17; i++) {
-    arr.push(i > 8 ? i - 8 : i);
-  }
-  arr.sort(() => Math.random() - Math.random());
-  return arr;
-};
 
-const formattedTime = (secs: number) =>
-  `${Math.floor(secs / 60)}m ${secs % 60}s`;
-const checkImages = (clickedImages: Card[], index: number, imgIndex: number) =>
-  clickedImages.filter(
-    (obj) => obj.index === index && obj.imgIndex === imgIndex
-  ).length === 1;
-ICONS = getShuffledArr();
+ICONS = shuffleArray();
 
 const initialState: GameState = {
   iconsIndexes: ICONS,
@@ -147,7 +138,7 @@ function App(): ReactElement {
 
   return (
     <Wrapper>
-      <h4>Memory Game</h4>
+      <h4 className="text-black font-bold">Memory Game</h4>
       <DashBoard>
         <span>Time: {formattedTime(state.time)}</span>
         <span>{state.moves} moves</span>
@@ -160,7 +151,7 @@ function App(): ReactElement {
             onClick={() =>
               setState({
                 ...initialState,
-                iconsIndexes: getShuffledArr(),
+                iconsIndexes: shuffleArray(),
                 // ended: false,
                 // gameRunning: true,
                 status: "playing",

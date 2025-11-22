@@ -1,3 +1,4 @@
+// interfaces
 export interface GameState {
     iconsIndexes: number[];
     moves: number;
@@ -14,15 +15,39 @@ export interface Card {
     imgIndex: number;
 }
 
-
-export type GameStatus = "idle" | "playing" | "paused" | "completed";
-
-
-export interface Difficulty {
-
+export interface DifficultyConfig {
+    flipDelay: number;
+    gridDim: [number, number]; // e.g. 4*4
 }
+
+
 
 
 export interface GameConfig {
 
+    difficulty: Difficulty;
+    theme: ThemeName;
 }
+
+
+// Types
+
+export type GameStatus = "idle" | "playing" | "paused" | "completed";
+
+
+export type ThemeName = 'default' | 'dark' | 'light'
+
+export type DifficultyConfigMap = Record<Difficulty, DifficultyConfig>
+
+
+// Enums
+
+export enum Difficulty {
+
+    Beginner = 'beginner',
+    // Medium = 'medium',
+    Intermediate = 'intermediate',
+    Hard = 'hard'
+
+}
+
