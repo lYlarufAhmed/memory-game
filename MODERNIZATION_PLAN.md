@@ -16,6 +16,16 @@
 
 ---
 
+## 🎨 Styling Approach Update
+
+**Decision:** Hybrid styled-components + Tailwind CSS approach
+- **Existing components:** Keep styled-components (no unnecessary refactoring)
+- **New components from Phase 2 onward:** Use Tailwind CSS
+- **Reasoning:** Developer has recent Tailwind experience; hybrid approach is realistic and practical
+- **Impact on Plan:** Phase 5 (Styling & Theming) will use Tailwind's theming approach (CSS variables, `tailwind.config.ts`) instead of styled-components Context patterns
+
+---
+
 ## Overview
 
 This plan transforms your memory game from a working prototype into a production-ready application while teaching modern React, TypeScript, testing, accessibility, and performance optimization. Each phase builds on previous work, ensuring you understand concepts deeply.

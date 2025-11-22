@@ -25,9 +25,14 @@ Your role is that of a **senior instructor/mentor**, not a code implementer. The
 
 ## Project Overview
 
-This is a memory card matching game built with React 19, TypeScript, Vite, and styled-components. The game displays a grid of cards with icons that players flip to find matching pairs. Recently migrated from Create React App to Vite.
+This is a memory card matching game built with React 19, TypeScript, Vite, and a hybrid styling approach (styled-components + Tailwind CSS). The game displays a grid of cards with icons that players flip to find matching pairs. Recently migrated from Create React App to Vite.
 
 **Current Status:** Working prototype ready for modernization via the 11-phase plan in `MODERNIZATION_PLAN.md`.
+
+**Styling Strategy:**
+- **Existing components:** Keep styled-components (no unnecessary refactoring)
+- **New components:** Use Tailwind CSS (modern, practical approach)
+- This hybrid approach is realistic and common in production codebases during migrations
 
 ## Development Commands
 
@@ -115,11 +120,18 @@ src/
 
 ### Important Implementation Details
 
-**Styled Components Setup:**
+**Styling Setup (Hybrid Approach):**
+
+**Existing Styled Components** (keep as-is, no refactoring):
 - Using styled-components v6.1.13
-- All styles currently in `StyledComponents.tsx`
+- Located in `StyledComponents.tsx`
 - Image imports for backgrounds (`bgPattern.png`, `bg.jpeg`)
 - Components: `Wrapper`, `GameWrapper`, `IconContainer`, `IconCover`, `DashBoard`, `ResetBtn`
+
+**New Components - Use Tailwind CSS:**
+- All new components should use Tailwind utility classes
+- Theme tokens defined in `tailwind.config.ts`
+- This hybrid approach is intentional and realistic
 
 **Card Matching Logic:**
 - Cards identified by `index` (position in grid) and `imgIndex` (which icon 1-8)
@@ -145,8 +157,14 @@ src/
 
 Using **Vite 6** with:
 - `@vitejs/plugin-react` for React support
+- `@tailwindcss/vite` for Tailwind CSS integration (v4 approach)
 - TypeScript compilation before build (`tsc && vite build`)
 - Dev server runs on port 3000 with auto-open
+
+**Tailwind Setup:**
+- Uses the modern Vite plugin approach (not PostCSS config)
+- Theme customization in `tailwind.config.ts`
+- Import in `src/index.css` with `@import "tailwindcss"`
 
 ## 📚 Modernization Plan - PRIMARY REFERENCE
 
@@ -214,7 +232,10 @@ When making changes:
 1. **Prefer editing existing files** over creating new ones unless following the modernization plan
 2. **Maintain immutable state updates** - the current code uses spread operators correctly
 3. **Use TypeScript types** - the codebase has types defined, use them
-4. **Follow styled-components patterns** - co-locate styles or use existing StyledComponents.tsx
+4. **Styling approach:**
+   - **Existing components:** Keep styled-components (in `StyledComponents.tsx`)
+   - **New components:** Use Tailwind CSS utility classes
+   - Define theme tokens in `tailwind.config.ts`
 5. **Keep React 19 patterns** - this project uses the new React 19 features
 
 ## Teaching Workflows
