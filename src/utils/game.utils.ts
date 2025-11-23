@@ -1,6 +1,6 @@
 import { Card } from "../types/game.types";
 
 
-export const checkImages = (clickedImages: Card[], index: number, imgIndex: number) => clickedImages.filter(
-  (obj) => obj.index === index && obj.imgIndex === imgIndex
+export const isCardAlreadyClicked = (clickedCards: Card[], card: Card) => clickedCards.filter(
+    (obj) => obj.index === card.index && obj.imgIndex === card.imgIndex
 ).length === 1;

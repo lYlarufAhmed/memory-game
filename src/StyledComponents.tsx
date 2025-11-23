@@ -25,7 +25,7 @@ export const GameWrapper = styled.div`
   align-content: center;
   align-items: center;
 `
-export const IconContainer = styled.div<{ matched?: boolean }>`
+export const IconContainer = styled.button<{ matched?: boolean }>`
   flex: 1 1 23%;
   // fill:red;
   height: 23%;

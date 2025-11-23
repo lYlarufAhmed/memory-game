@@ -310,38 +310,64 @@ When the developer indicates which phase they're working on, note it and:
 
 ## Session History & Context
 
-### Latest Session: 2025-11-23
+### Latest Session: 2025-11-23 (Extended)
 
-**Status:** Phase 1 - Foundation (80% Complete)
+**Status:** Phase 2 - Component Modularization (60% Complete)
 
 **Completed This Session:**
-- ✅ Phase 1.1: Type System (game.types.ts created)
-- ✅ Phase 1.2: Constants (game.constants.ts created)
-- ✅ Phase 1.3: Utility Functions (timing.utils.ts, array.utils.ts, game.utils.ts)
-- ✅ Phase 1.4: Testing Infrastructure (Vitest setup, first test written)
-- ✅ Tailwind CSS Integration (Vite plugin approach)
+- ✅ Phase 1 (100%): Foundation complete (types, constants, utils, testing, Tailwind)
+- ✅ Phase 2.1: Card component extracted with tests
+- ✅ Phase 2.2: Dashboard component extracted with tests
+- ✅ Phase 2.3: VictoryMessage component created
+- ✅ React Testing Library setup in test.setup.ts
+- ✅ Type system improvements (clickedImages → clickedCards)
+- ✅ Utility function improvements (checkImages → isCardAlreadyClicked)
 
 **Next Tasks:**
-1. Complete utility test coverage (time.utils.test.ts, game.utils.test.ts, improve array.utils.test.ts)
-2. Phase 1.5: Fix global ICONS variable in App.tsx (lines 13-44)
-3. Phase 1.6: Final Phase 1 review and completion
+1. Complete Phase 2: Extract GameBoard component
+2. Finish component test coverage
+3. Phase 3: Custom Hooks & Logic Extraction (useGameState, useGameTimer, useCardFlip)
+
+**Key Architectural Decision Made:**
+**Type Organization Strategy:**
+- Domain types (GameState, Card, Difficulty) → Centralized in `types/game.types.ts`
+- Component props (CardProps, DashboardProps) → Co-located in component files
+- Shared UI types → Create `types/ui.types.ts` when duplication emerges (Rule of Three)
+
+**Rationale:** Component props are UI concerns specific to components and benefit from co-location for portability and maintainability. Domain types represent shared business concepts and belong in centralized files.
 
 **Key Learnings Covered:**
-- Pure functions vs hooks (what goes in utils vs custom hooks)
-- TypeScript runtime vs compile-time (enums vs union types)
-- Testing philosophy (AAA pattern, behavior over implementation)
-- Modern tooling (Tailwind v4 Vite plugin vs v3 PostCSS)
-- When to extract code (utils now, hooks in Phase 3)
+- Co-located vs centralized type organization
+- Component composition and props design
+- Separation of domain vs UI concerns
+- React Testing Library setup and component testing
+- Semantic naming improvements (clickedCards, isCardAlreadyClicked)
+- "Rule of Three" for when to centralize code
 
 **Developer Profile:**
-- Learning-focused, asks "why" questions
+- Learning-focused, asks "why" questions before implementation
 - Strong architectural thinking
+- Applies learned principles immediately to code
 - Familiar with Tailwind, new to styled-components
 - Prefers explanations before implementation
 - Follows systematic approach
 
 **Important Context:**
-- All commits have been made, working tree is clean
+- Session extended after initial closure for architectural discussion
+- Developer asked about type organization, then applied principles in Phase 2 work
+- Uncommitted changes ready for commit (Phase 2 component extraction work)
 - Hybrid styling approach is intentional (keep styled-components, use Tailwind for new)
 - Sequential phase completion is pedagogical - don't skip ahead
 - Refer to SESSION_SUMMARY.md for detailed session notes
+
+**Component Structure Created:**
+```
+src/components/
+├── Card/
+│   ├── Card.tsx (with co-located CardProps interface)
+│   └── Card.test.tsx
+├── Dashboard/
+│   ├── Dashboard.tsx (with co-located DashboardProps interface)
+│   └── Dashboard.test.tsx
+└── VictoryMessage.tsx
+```

@@ -1,26 +1,19 @@
 import { ReactElement, useEffect, useState } from "react";
 
-import Icon from "./icons";
 import { GameState } from "./types/game.types";
-import {
-  Wrapper,
-  DashBoard,
-  GameWrapper,
-  ResetBtn,
-  IconContainer,
-  IconCover,
-} from "./StyledComponents";
+import { Wrapper, GameWrapper } from "./StyledComponents";
 
 import { shuffleArray } from "./utils/array.utils";
-import { formattedTime } from "./utils/timing.utils";
-import { checkImages } from "./utils/game.utils";
+import { isCardAlreadyClicked } from "./utils/game.utils";
+import Card from "./components/Card/Card";
+import Dashboard from "./components/Dashboard/Dashboard";
 
 const initialState: GameState = {
   iconsIndexes: shuffleArray(),
   moves: 0,
   time: 0,
   score: 0,
-  clickedImages: [],
+  clickedCards: [],
   showIndexes: [],
   lastClicked: NaN,
   status: "idle",
@@ -40,52 +33,40 @@ function App(): ReactElement {
     );
   const clickHandler = (index: number, imgIndex: number) => {
     setState((prev) => {
-      if (!checkImages(prev.clickedImages, index, imgIndex)) {
-        let clickedImages =
-          prev.clickedImages.length > 1
-            ? [{ index, imgIndex }]
-            : [...prev.clickedImages, { index, imgIndex }];
+      let clickedImages =
+        prev.clickedCards.length > 1
+          ? [{ index, imgIndex }]
+          : [...prev.clickedCards, { index, imgIndex }];
 
-        let lastClicked =
-          prev.clickedImages.length > 1 ? NaN : prev.lastClicked;
-        let moves = prev.moves;
-        let score = prev.score;
-        let showIndexes = prev.showIndexes;
-        // let gameRunning = prev.gameRunning;
-        // let ended = prev.ended;
-        let status = prev.status;
+      let lastClicked = prev.clickedCards.length > 1 ? NaN : prev.lastClicked;
+      let moves = prev.moves;
+      let score = prev.score;
+      let showIndexes = prev.showIndexes;
+      let status = prev.status;
 
-        if (clickedImages.length === 2) {
-          moves += 1;
-          if (clickedImages[0].imgIndex === clickedImages[1].imgIndex) {
-            score += 1;
-            showIndexes = [...prev.showIndexes, clickedImages[0].imgIndex];
-            if (showIndexes.length === 8) {
-              status = "completed";
-            }
+      if (clickedImages.length === 2) {
+        moves += 1;
+        if (clickedImages[0].imgIndex === clickedImages[1].imgIndex) {
+          score += 1;
+          showIndexes = [...prev.showIndexes, clickedImages[0].imgIndex];
+          if (showIndexes.length === 8) {
+            status = "completed";
           }
-          lastClicked = new Date().getTime();
         }
-
-        return {
-          ...prev,
-          clickedImages,
-          lastClicked, // to flip the images after a certain time
-          moves,
-          score,
-          showIndexes,
-          // ended,
-          // gameRunning,
-          status,
-        };
+        lastClicked = new Date().getTime();
       }
-      return prev;
+
+      return {
+        ...prev,
+        clickedCards: clickedImages,
+        lastClicked, // to flip the images after a certain time
+        moves,
+        score,
+        showIndexes,
+        status,
+      };
     });
   };
-
-  const showResetButton = () =>
-    state.status == "playing" || state.status == "paused";
-
   useEffect(() => {
     const timerHandler = setInterval(() => {
       if (state.showIndexes.length === 8 || state.status == "completed") {
@@ -101,11 +82,11 @@ function App(): ReactElement {
             prev.lastClicked > 0 ? currTime - prev.lastClicked : NaN;
           //   console.log("click diff", clickDiff);
 
-          let clickedImages = prev.clickedImages;
+          let clickedImages = prev.clickedCards;
           let lastClicked = prev.lastClicked;
 
           // after 2.5 sec flip the open images automatically.
-          if (clickDiff > 2500 && prev.clickedImages.length === 2) {
+          if (clickDiff > 2500 && prev.clickedCards.length === 2) {
             clickedImages = [];
             lastClicked = NaN;
           }
@@ -113,7 +94,7 @@ function App(): ReactElement {
           return {
             ...prev,
             time: prev.status == "playing" ? prev.time + 1 : prev.time,
-            clickedImages,
+            clickedCards: clickedImages,
             lastClicked,
           };
         });
@@ -130,51 +111,38 @@ function App(): ReactElement {
   return (
     <Wrapper>
       <h4 className="text-black font-bold">Memory Game</h4>
-      <DashBoard>
-        <span>Time: {formattedTime(state.time)}</span>
-        <span>{state.moves} moves</span>
-        <span>Score: {state.score}</span>
-        <ResetBtn onClick={toggleGameRunning}>
-          {state.status == "playing" ? "Pause" : "Start"}
-        </ResetBtn>
-        {showResetButton() == true && (
-          <ResetBtn
-            onClick={() =>
-              setState({
-                ...initialState,
-                iconsIndexes: shuffleArray(),
-                status: "playing",
-              })
-            }
-          >
-            Restart
-          </ResetBtn>
-        )}
-      </DashBoard>
-      {state.status == "completed" && (
-        <b>
-          Congratulations! You won in {state.moves} moves! You took{" "}
-          {formattedTime(state.time)}!
-        </b>
-      )}
+      <Dashboard
+        moves={state.moves}
+        score={state.score}
+        time={state.time}
+        status={state.status}
+        onPause={toggleGameRunning}
+        onResume={toggleGameRunning}
+        onRestart={() =>
+          setState({
+            ...initialState,
+            iconsIndexes: shuffleArray(),
+            status: "playing",
+          })
+        }
+      />
 
       <GameWrapper>
         {state.iconsIndexes.map((i: number, index: number) => (
-          <IconContainer
-            matched={state.showIndexes.includes(i)}
-            key={index}
+          <Card
+            iconNumber={i}
+            isFlipped={
+              isCardAlreadyClicked(state.clickedCards, {
+                index,
+                imgIndex: i,
+              }) || state.showIndexes.includes(i)
+            }
+            isMatched={state.showIndexes.includes(i)}
             onClick={() =>
               state.status == "playing" ? clickHandler(index, i) : () => {}
             }
-          >
-            <Icon svgNo={i} />
-            <IconCover
-              show={
-                checkImages(state.clickedImages, index, i) ||
-                state.showIndexes.includes(i)
-              }
-            />
-          </IconContainer>
+            disabled={false}
+          />
         ))}
       </GameWrapper>
     </Wrapper>
