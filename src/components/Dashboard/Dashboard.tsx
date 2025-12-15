@@ -1,43 +1,37 @@
+import { useGame } from "../../hooks/useGame";
 import { DashBoard, ResetBtn } from "../../StyledComponents";
-import { GameStatus } from "../../types/game.types";
-
-interface DashBoardProps {
-  time: number;
-  moves: number;
-  score: number;
-  status: GameStatus;
-  onPause: () => void;
-  onResume: () => void;
-  onRestart: () => void;
-}
 
 import { formattedTime } from "../../utils/timing.utils";
 import VictoryMessage from "../VictoryMessage";
 
-const Dashboard = ({
-  time,
-  moves,
-  score,
-  status,
-  onPause,
-  onRestart,
-  onResume,
-}: DashBoardProps) => {
+const Dashboard = () => {
+  let {
+    toggleGameRunning,
+    moves,
+    score,
+    time,
+    gameStatus,
+    handlRestart,
+  } = useGame();
   return (
     <>
       <DashBoard>
         <span>Time: {formattedTime(time)}</span>
         <span>{moves} moves</span>
         <span>Score: {score}</span>
-        <ResetBtn onClick={status == "playing" ? onPause : onResume}>
-          {status == "playing" ? "Pause" : "Start"}
+        <ResetBtn onClick={toggleGameRunning}>
+          {gameStatus == "playing" ? "Pause" : "Start"}
         </ResetBtn>
-        {["playing", "paused"].includes(status) && (
-          <ResetBtn onClick={onRestart}>Restart</ResetBtn>
+        {["playing", "paused"].includes(gameStatus) && (
+          <ResetBtn onClick={handlRestart}>Restart</ResetBtn>
         )}
       </DashBoard>
-      {status == "completed" && (
-        <VictoryMessage moves={moves} time={time} onPlayAgain={onResume} />
+      {gameStatus == "completed" && (
+        <VictoryMessage
+          moves={moves}
+          time={time}
+          onPlayAgain={toggleGameRunning}
+        />
       )}
     </>
   );

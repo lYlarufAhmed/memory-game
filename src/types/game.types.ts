@@ -4,8 +4,8 @@ export interface GameState {
     moves: number;
     time: number;
     score: number;
-    clickedCards: Card[];
-    showIndexes: number[];
+    flippedCardIds: Card[];
+    matchedCardIds: number[];
     lastClicked: number;
     status: GameStatus
 }
