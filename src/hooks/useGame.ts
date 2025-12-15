@@ -17,17 +17,16 @@ export const useGame = () => {
     const [state, setState] = useState(initialState)
     const toggleGameRunning = () =>
         setState((prev: GameState) =>
-            prev.status == "completed"
+            prev.status === "completed"
                 ? { ...initialState, status: "playing", iconsIndexes: shuffleArray() }
                 : {
                     ...prev,
-                    // gameRunning: !prev.gameRunning,
-                    status: prev.status == "playing" ? "paused" : "playing",
+                    status: prev.status === "playing" ? "paused" : "playing",
                 }
         );
     const clickHandler = (index: number, imgIndex: number) => {
         setState((prev) => {
-            if (prev.status != "playing") return { ...prev };
+            if (prev.status !== "playing") return { ...prev };
             let clickedImages =
                 prev.flippedCardIds.length > 1
                     ? [{ index, imgIndex }]
@@ -65,7 +64,7 @@ export const useGame = () => {
     const handlRestart = () => setState({ ...initialState, iconsIndexes: shuffleArray(), status: 'playing' })
     useEffect(() => {
         const timerHandler = setInterval(() => {
-            if (state.matchedCardIds.length === 8 || state.status == "completed") {
+            if (state.matchedCardIds.length === 8 || state.status === "completed") {
                 clearInterval(timerHandler);
                 setState((prev) => ({
                     ...prev,
@@ -89,7 +88,7 @@ export const useGame = () => {
 
                     return {
                         ...prev,
-                        time: prev.status == "playing" ? prev.time + 1 : prev.time,
+                        time: prev.status === "playing" ? prev.time + 1 : prev.time,
                         flippedCardIds: clickedImages,
                         lastClicked,
                     };

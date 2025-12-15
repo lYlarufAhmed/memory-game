@@ -25,21 +25,21 @@ export const GameWrapper = styled.div`
   align-content: center;
   align-items: center;
 `
-export const IconContainer = styled.button<{ matched?: boolean }>`
+export const IconContainer = styled.button<{ $matched?: boolean }>`
   flex: 1 1 23%;
   // fill:red;
   height: 23%;
   padding: .2rem .1rem;
-  background: ${props => props.matched ? 'rgba(96,221,142,1)' : 'yellow'};
+  background: ${props => props.$matched ? 'rgba(96,221,142,1)' : 'yellow'};
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   border-radius: .4rem;
 `
-export const IconCover = styled.div<{ show?: boolean }>`
+export const IconCover = styled.div<{ $show?: boolean }>`
   position: absolute;
-  background: ${props => !props.show && '#07302E'};
+  background: ${props => !props.$show && '#07302E'};
   height: 100%;
   border-radius: .4rem;
   width: 100%;

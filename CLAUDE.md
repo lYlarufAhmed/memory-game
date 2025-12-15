@@ -310,23 +310,29 @@ When the developer indicates which phase they're working on, note it and:
 
 ## Session History & Context
 
-### Latest Session: 2025-11-23 (Extended)
+### Latest Session: 2025-12-15
 
-**Status:** Phase 2 - Component Modularization (60% Complete)
+**Status:** Phase 2 - Component Modularization (95% Complete) / Phase 3 - Custom Hooks (25% Complete)
 
 **Completed This Session:**
 - ✅ Phase 1 (100%): Foundation complete (types, constants, utils, testing, Tailwind)
-- ✅ Phase 2.1: Card component extracted with tests
-- ✅ Phase 2.2: Dashboard component extracted with tests
-- ✅ Phase 2.3: VictoryMessage component created
-- ✅ React Testing Library setup in test.setup.ts
-- ✅ Type system improvements (clickedImages → clickedCards)
-- ✅ Utility function improvements (checkImages → isCardAlreadyClicked)
+- ✅ Phase 2 (~95%): Component Modularization complete
+  - ✅ Card component extracted with tests
+  - ✅ Dashboard component extracted with tests
+  - ✅ VictoryMessage component created
+  - ✅ GameBoard component extracted
+- ✅ Phase 3.1: useGame custom hook created (consolidates ALL game logic)
+- ✅ App.tsx completely refactored (189 lines → 38 lines, 80% reduction)
+- ✅ React Strict Mode implementation
+- ✅ Styled-components transient props fix ($matched, $show)
+- ✅ Critical bug fix: Hook state isolation (lifted state to App)
+- ✅ Code quality improvements (== → ===, removed dead code)
 
 **Next Tasks:**
-1. Complete Phase 2: Extract GameBoard component
-2. Finish component test coverage
-3. Phase 3: Custom Hooks & Logic Extraction (useGameState, useGameTimer, useCardFlip)
+1. Test the application manually (verify card clicking, matching, timer, score)
+2. Write GameBoard component tests (GameBoard.test.tsx)
+3. Decide: Keep consolidated useGame OR split into useGameTimer, useCardFlip (Phase 3)
+4. Phase 4: Icons Refactoring (USER IS VERY INTERESTED - multiple icon sets, dynamic SVG coloring)
 
 **Key Architectural Decision Made:**
 **Type Organization Strategy:**
@@ -362,12 +368,26 @@ When the developer indicates which phase they're working on, note it and:
 
 **Component Structure Created:**
 ```
-src/components/
-├── Card/
-│   ├── Card.tsx (with co-located CardProps interface)
-│   └── Card.test.tsx
-├── Dashboard/
-│   ├── Dashboard.tsx (with co-located DashboardProps interface)
-│   └── Dashboard.test.tsx
-└── VictoryMessage.tsx
+src/
+├── components/
+│   ├── Card/
+│   │   ├── Card.tsx (with co-located CardProps interface)
+│   │   └── Card.test.tsx
+│   ├── Dashboard/
+│   │   ├── Dashboard.tsx (with co-located DashboardProps interface)
+│   │   └── Dashboard.test.tsx
+│   ├── GameBoard/
+│   │   ├── GameBoard.tsx (with co-located GameBoardProps interface)
+│   │   └── GameBoard.test.tsx (TODO)
+│   └── VictoryMessage.tsx
+├── hooks/
+│   └── useGame.ts (consolidates ALL game logic)
+└── App.tsx (38 lines - orchestration only)
 ```
+
+**Key Learning from This Session:**
+- **Hook State Isolation:** Each `useGame()` call creates separate state instances
+- **Lifting State Up:** Call hooks at parent level, pass props down to share state
+- **Props Drilling Pattern:** App → useGame() → Props → Components
+- **Transient Props:** Use `$` prefix for styled-components props ($matched, $show)
+- **Single Responsibility Principle:** Components render UI, hooks manage logic
